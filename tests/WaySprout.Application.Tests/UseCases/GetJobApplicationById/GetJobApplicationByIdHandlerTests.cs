@@ -1,35 +1,36 @@
 using WaySprout.Application.Ports;
-using WaySprout.Application.UseCases.GetJobApplications;
+using WaySprout.Application.UseCases.GetJobApplicationById;
 using WaySprout.Domain.Entities;
 
-namespace WaySprout.Application.Tests.UseCases.GetJobApplications;
+namespace WaySprout.Application.Tests.UseCases.GetJobApplicationById;
 
-public class GetJobApplicationsHandlerTests
+public class GetJobApplicationByIdHandlerTests
 {
   [Fact]
-  public async Task HandleAsync_RepositoryHasApplications_ReturnsMappedDtos()
+  public async Task HandleAsync_ExistingId_ReturnsMappedDto()
   {
     var application = Valid();
-    var handler = new GetJobApplicationsHandler(new FakeJobApplicationRepository(application));
+    var handler = new GetJobApplicationByIdHandler(new FakeJobApplicationRepository(application));
 
-    var result = await handler.HandleAsync();
+    var dto = await handler.HandleAsync(application.Id);
 
-    var dto = Assert.Single(result);
+    Assert.NotNull(dto);
     Assert.Equal(application.Id, dto.Id);
     Assert.Equal(application.Company, dto.Company);
     Assert.Equal(application.Position, dto.Position);
     Assert.Equal(application.Status.ToString(), dto.Status);
     Assert.Equal(application.AppliedOn, dto.AppliedOn);
+    Assert.Equal(application.Description, dto.Description);
   }
 
   [Fact]
-  public async Task HandleAsync_RepositoryEmpty_ReturnsEmptyList()
+  public async Task HandleAsync_NonexistentId_ReturnsNull()
   {
-    var handler = new GetJobApplicationsHandler(new FakeJobApplicationRepository());
+    var handler = new GetJobApplicationByIdHandler(new FakeJobApplicationRepository());
 
-    var result = await handler.HandleAsync();
+    var dto = await handler.HandleAsync(Guid.NewGuid());
 
-    Assert.Empty(result);
+    Assert.Null(dto);
   }
 
   private static JobApplication Valid() =>

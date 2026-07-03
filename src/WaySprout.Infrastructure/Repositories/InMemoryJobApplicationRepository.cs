@@ -15,9 +15,9 @@ public class InMemoryJobApplicationRepository : IJobApplicationRepository
       "Nébula Soft",
       "Backend Engineer",
       """
-      Buscamos una persona para el equipo de plataforma, enfocada en el diseño de
-      APIs internas y la evolución de nuestro core de facturación. Trabajarás con
-      arquitectura hexagonal, colas de mensajes y bases de datos relacionales.
+      We're looking for someone to join the platform team, focused on designing
+      internal APIs and evolving our billing core. You'll work with hexagonal
+      architecture, message queues, and relational databases.
       """,
       new DateOnly(2026, 5, 12)
     ),
@@ -27,9 +27,9 @@ public class InMemoryJobApplicationRepository : IJobApplicationRepository
       "Cronos Digital",
       "Frontend Engineer",
       """
-      Equipo de producto buscando reforzar el frontend de nuestra suite de
-      analítica. Stack principal en React y TypeScript, con foco en accesibilidad
-      y componentes reutilizables.
+      Product team looking to strengthen the frontend of our analytics suite.
+      Main stack is React and TypeScript, with a focus on accessibility and
+      reusable components.
       """,
       new DateOnly(2026, 6, 2)
     ),
@@ -39,9 +39,9 @@ public class InMemoryJobApplicationRepository : IJobApplicationRepository
       "Vertice Labs",
       "Data Analyst",
       """
-      Rol orientado a construir dashboards y modelos de reporting para el área
-      comercial. Se valora experiencia con SQL avanzado y herramientas de
-      visualización de datos.
+      Role focused on building dashboards and reporting models for the
+      commercial team. Experience with advanced SQL and data visualization
+      tools is valued.
       """,
       new DateOnly(2026, 6, 20)
     ),
@@ -50,5 +50,11 @@ public class InMemoryJobApplicationRepository : IJobApplicationRepository
   public Task<IReadOnlyList<JobApplication>> GetAllAsync()
   {
     return Task.FromResult(Seed);
+  }
+
+  public Task<JobApplication?> GetByIdAsync(Guid id)
+  {
+    var jobApplication = Seed.FirstOrDefault(ja => ja.Id == id);
+    return Task.FromResult(jobApplication);
   }
 }

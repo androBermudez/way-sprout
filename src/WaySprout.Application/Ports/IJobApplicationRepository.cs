@@ -5,4 +5,6 @@ namespace WaySprout.Application.Ports;
 public interface IJobApplicationRepository
 {
   Task<IReadOnlyList<JobApplication>> GetAllAsync();
+
+  Task<JobApplication?> GetByIdAsync(Guid id);
 }
