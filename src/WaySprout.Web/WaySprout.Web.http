@@ -1,0 +1,6 @@
+@WaySprout.Web_HostAddress = http://localhost:5022
+
+GET {{WaySprout.Web_HostAddress}}/api/v1/applications
+Accept: application/json
+
+###

@@ -1,0 +1,12 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/WaySprout.Application/WaySprout.Application.csproj" />
+    <Project Path="src/WaySprout.Domain/WaySprout.Domain.csproj" />
+    <Project Path="src/WaySprout.Infrastructure/WaySprout.Infrastructure.csproj" />
+    <Project Path="src/WaySprout.Web/WaySprout.Web.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/WaySprout.Application.Tests/WaySprout.Application.Tests.csproj" />
+    <Project Path="tests/WaySprout.Domain.Tests/WaySprout.Domain.Tests.csproj" />
+  </Folder>
+</Solution>
