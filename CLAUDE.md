@@ -19,7 +19,13 @@ dotnet test --filter "FullyQualifiedName~JobApplicationTests.Create_SetsAllField
 ```
 
 ```bash
-dotnet run --project src/WaySprout.Web/     # API on http://localhost:5022
+dotnet watch --project src/WaySprout.Web/ run   # API with hot reload on http://localhost:5022
+dotnet run --project src/WaySprout.Web/         # API, one-off (no watching)
+```
+
+If `dotnet watch` doesn't pick up changes inside the devcontainer (bind-mounted volumes sometimes don't propagate file events), force polling:
+```bash
+DOTNET_USE_POLLING_FILE_WATCHER=1 dotnet watch --project src/WaySprout.Web/ run
 ```
 
 When the frontend project exists:
