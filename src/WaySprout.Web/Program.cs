@@ -21,13 +21,15 @@ var app = builder.Build();
 
 app.UseCors("Frontend");
 
-app.MapGet("/api/v1/applications", async (GetJobApplicationsHandler handler) =>
+var apiGroup = app.MapGroup("/api/v1");
+
+apiGroup.MapGet("/applications", async (GetJobApplicationsHandler handler) =>
 {
     var result = await handler.HandleAsync();
     return Results.Ok(result);
 });
 
-app.MapGet("/api/v1/applications/{id:guid}", async (Guid id, GetJobApplicationByIdHandler handler) =>
+apiGroup.MapGet("/applications/{id:guid}", async (Guid id, GetJobApplicationByIdHandler handler) =>
 {
     var result = await handler.HandleAsync(id);
     return result is not null ? Results.Ok(result) : Results.NotFound();
