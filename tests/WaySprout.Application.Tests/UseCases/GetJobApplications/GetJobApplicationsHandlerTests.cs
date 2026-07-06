@@ -1,6 +1,8 @@
 using WaySprout.Application.Ports;
+using WaySprout.Application.Services;
 using WaySprout.Application.UseCases.GetJobApplications;
 using WaySprout.Domain.Entities;
+using WaySprout.Domain.Enums;
 
 namespace WaySprout.Application.Tests.UseCases.GetJobApplications;
 
@@ -10,9 +12,9 @@ public class GetJobApplicationsHandlerTests
   public async Task HandleAsync_RepositoryHasApplications_ReturnsMappedDtos()
   {
     var application = Valid();
-    var handler = new GetJobApplicationsHandler(new FakeJobApplicationRepository(application));
+    var handler = Handler(new FakeJobApplicationRepository(application));
 
-    var result = await handler.HandleAsync();
+    var result = await handler.HandleAsync(EmptyQuery());
 
     var dto = Assert.Single(result);
     Assert.Equal(application.Id, dto.Id);
@@ -25,9 +27,9 @@ public class GetJobApplicationsHandlerTests
   [Fact]
   public async Task HandleAsync_RepositoryEmpty_ReturnsEmptyList()
   {
-    var handler = new GetJobApplicationsHandler(new FakeJobApplicationRepository());
+    var handler = Handler(new FakeJobApplicationRepository());
 
-    var result = await handler.HandleAsync();
+    var result = await handler.HandleAsync(EmptyQuery());
 
     Assert.Empty(result);
   }
@@ -41,9 +43,15 @@ public class GetJobApplicationsHandlerTests
       "Full stack role.",
       new DateOnly(2026, 1, 15));
 
+  private static JobApplicationQuery EmptyQuery() =>
+    new(SearchText: null, Statuses: new HashSet<ApplicationStatus>(), AppliedRange: null, SortBy: null, Direction: null);
+
+  private static GetJobApplicationsHandler Handler(IJobApplicationRepository repository) =>
+    new(repository, new DateRangePresetResolver(TimeProvider.System));
+
   private sealed class FakeJobApplicationRepository(params JobApplication[] applications) : IJobApplicationRepository
   {
-    public Task<IReadOnlyList<JobApplication>> GetAllAsync() =>
+    public Task<IReadOnlyList<JobApplication>> GetAllAsync(JobApplicationFilter filter) =>
       Task.FromResult<IReadOnlyList<JobApplication>>(applications);
 
     public Task<JobApplication?> GetByIdAsync(Guid id) =>

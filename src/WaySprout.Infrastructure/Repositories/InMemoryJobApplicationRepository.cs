@@ -1,4 +1,5 @@
 ﻿using WaySprout.Application.Ports;
+using WaySprout.Application.UseCases.GetJobApplications;
 using WaySprout.Domain.Entities;
 
 namespace WaySprout.Infrastructure.Repositories;
@@ -47,7 +48,9 @@ public class InMemoryJobApplicationRepository : IJobApplicationRepository
     ),
   ];
 
-  public Task<IReadOnlyList<JobApplication>> GetAllAsync()
+  // TODO: apply filter.SearchText / Statuses / AppliedFrom-To / SortBy / Direction.
+  // Wiring the query end-to-end first; the actual filtering/sorting lands in a follow-up step.
+  public Task<IReadOnlyList<JobApplication>> GetAllAsync(JobApplicationFilter filter)
   {
     return Task.FromResult(Seed);
   }
