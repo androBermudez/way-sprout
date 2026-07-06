@@ -1,5 +1,6 @@
 using WaySprout.Application.Ports;
 using WaySprout.Application.UseCases.GetJobApplications;
+using WaySprout.Application.UseCases.GetJobApplicationById;
 using WaySprout.Infrastructure.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -14,15 +15,24 @@ builder.Services.AddCors(options =>
 
 builder.Services.AddSingleton<IJobApplicationRepository, InMemoryJobApplicationRepository>();
 builder.Services.AddScoped<GetJobApplicationsHandler>();
+builder.Services.AddScoped<GetJobApplicationByIdHandler>();
 
 var app = builder.Build();
 
 app.UseCors("Frontend");
 
-app.MapGet("/api/v1/applications", async (GetJobApplicationsHandler handler) =>
+var apiGroup = app.MapGroup("/api/v1");
+
+apiGroup.MapGet("/applications", async (GetJobApplicationsHandler handler) =>
 {
     var result = await handler.HandleAsync();
     return Results.Ok(result);
+});
+
+apiGroup.MapGet("/applications/{id:guid}", async (Guid id, GetJobApplicationByIdHandler handler) =>
+{
+    var result = await handler.HandleAsync(id);
+    return result is not null ? Results.Ok(result) : Results.NotFound();
 });
 
 app.Run();

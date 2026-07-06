@@ -19,7 +19,13 @@ dotnet test --filter "FullyQualifiedName~JobApplicationTests.Create_SetsAllField
 ```
 
 ```bash
-dotnet run --project src/WaySprout.Web/     # API on http://localhost:5022
+dotnet watch --project src/WaySprout.Web/ run   # API with hot reload on http://localhost:5022
+dotnet run --project src/WaySprout.Web/         # API, one-off (no watching)
+```
+
+If `dotnet watch` doesn't pick up changes inside the devcontainer (bind-mounted volumes sometimes don't propagate file events), force polling:
+```bash
+DOTNET_USE_POLLING_FILE_WATCHER=1 dotnet watch --project src/WaySprout.Web/ run
 ```
 
 When the frontend project exists:
@@ -73,6 +79,41 @@ public void IsFinal_FinalStatuses_ReturnsTrue(ApplicationStatus status) { ... }
 ```
 
 Each test class defines a private `static` helper that returns a valid default instance (`Valid()`) to keep test setup concise. Tests use `DomainException` (not `ArgumentException`) when asserting throws on domain rules.
+
+## Code Style
+
+### C#
+
+- **Braces:** always use `{}` for `if`/`else`/loops, even for single-statement bodies. Enforced at build time (`EnforceCodeStyleInBuild` in `Directory.Build.props` + `csharp_prefer_braces` in `.editorconfig`) — a missing brace is a build warning, not just an IDE suggestion.
+
+  ```csharp
+  if (application is null)
+  {
+    return NotFound();
+  }
+  ```
+
+- **Indentation:** 2 spaces, formalized in `.editorconfig` (not the 4-space .NET default — this project has used 2 spaces consistently since the initial scaffold).
+- **Namespaces:** file-scoped (`namespace WaySprout.Domain.Entities;`), not block-scoped.
+- **Primary constructors** for simple dependency injection (e.g., `GetJobApplicationsHandler(IJobApplicationRepository repository)`).
+- **`var`** when the type is obvious from the right-hand side.
+- **Nullable reference types**: model "not found" with `T?` return values, not exceptions or sentinel values. Reserve exceptions (`DomainException`) for actual domain rule violations.
+- **No XML doc comments (`///`)** on public APIs. Descriptive names (`Create`, `HandleAsync`, `GetByIdAsync`) already communicate intent; add a doc comment only if there's a non-obvious constraint that names can't express.
+
+### Frontend (TypeScript/TSX)
+
+- **Formatting:** Prettier on save (`editor.formatOnSave` + `esbenp.prettier-vscode`, configured in `.devcontainer/devcontainer.json`). Config lives in `frontend/.prettierrc`, scoped to `frontend/` only — it doesn't affect `.NET` or root-level files. `"semi": false`: semicolons are omitted where safe, kept only where required to avoid ambiguous parses.
+- **Components:** function declarations (`export function ApplicationsPage() { ... }`), not arrow-function consts.
+- **Exports:** named exports everywhere, except `src/App.tsx` (default export, matching the Vite template's entry-point convention). Enforced via oxlint's `import/no-default-export` rule, with an override allowing it in `App.tsx` (`frontend/.oxlintrc.json`).
+- **Import order:** third-party packages first, then a blank line, then internal `@/` imports.
+
+  ```ts
+  import { useQuery } from "@tanstack/react-query"
+
+  import { getJobApplications } from "@/api/jobApplication"
+  ```
+
+  Auto-enforced on save by Prettier via the `@ianvs/prettier-plugin-sort-imports` plugin (config in `frontend/.prettierrc`) — oxlint's `import` plugin doesn't have an `import/order`-equivalent rule, so this lives in Prettier instead. Also alphabetizes named specifiers within a single import statement.
 
 ## Tech Notes
 

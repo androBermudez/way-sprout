@@ -23,8 +23,8 @@ Prerequisites: [.NET 10 SDK](https://dotnet.microsoft.com/download), [Node.js 22
 dotnet restore
 cd frontend && pnpm install && cd ..
 
-# Run backend (http://localhost:5022)
-dotnet run --project src/WaySprout.Web/WaySprout.Web.csproj
+# Run backend with hot reload (http://localhost:5022)
+dotnet watch --project src/WaySprout.Web/ run
 
 # Run frontend in a second terminal (http://localhost:5173)
 cd frontend && pnpm dev
@@ -34,14 +34,15 @@ Open http://localhost:5173
 
 ## Commands
 
-| Command                                   | Description                    |
-| ----------------------------------------- | ------------------------------ |
-| `dotnet build`                            | Build all projects             |
-| `dotnet test`                             | Run all tests                  |
-| `dotnet run --project src/WaySprout.Web/` | Start API server               |
-| `cd frontend && pnpm dev`                 | Start Vite dev server          |
-| `cd frontend && pnpm build`               | Build React app for production |
-| `cd frontend && pnpm lint`                | Lint TypeScript                |
+| Command                                         | Description                             |
+| ----------------------------------------------- | ---------------------------------------- |
+| `dotnet build`                                  | Build all projects                       |
+| `dotnet test`                                   | Run all tests                            |
+| `dotnet watch --project src/WaySprout.Web/ run` | Start API server with hot reload (dev)   |
+| `dotnet run --project src/WaySprout.Web/`       | Start API server (one-off, no watching)  |
+| `cd frontend && pnpm dev`                       | Start Vite dev server                    |
+| `cd frontend && pnpm build`                     | Build React app for production           |
+| `cd frontend && pnpm lint`                      | Lint TypeScript                          |
 
 ## Project Structure
 
