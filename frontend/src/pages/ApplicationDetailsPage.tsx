@@ -1,35 +1,38 @@
-import { Link, useParams } from "react-router-dom";
-import { useQuery } from "@tanstack/react-query";
-import { ArrowLeft } from "lucide-react";
-import { getJobApplicationById } from "@/api/jobApplication";
-import { Badge } from "@/components/ui/badge";
-import { buttonVariants } from "@/components/ui/button";
+import { Link, useParams } from "react-router-dom"
+import { useQuery } from "@tanstack/react-query"
+import { ArrowLeft } from "lucide-react"
+
+import { getJobApplicationById } from "@/api/jobApplication"
+import { Badge } from "@/components/ui/badge"
+import { buttonVariants } from "@/components/ui/button"
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
+} from "@/components/ui/card"
 
 export function ApplicationDetailsPage() {
-  const { id } = useParams<{ id: string }>();
+  const { id } = useParams<{ id: string }>()
 
   const { data, isLoading, isError } = useQuery({
     queryKey: ["job-application", id],
     queryFn: () => getJobApplicationById(id!),
     enabled: !!id,
-  });
+  })
 
   return (
-    <div className="p-6 space-y-4">
-      <Link
-        to="/applications"
-        className={buttonVariants({ variant: "outline", size: "sm" })}
-      >
-        <ArrowLeft />
-        Back to applications
-      </Link>
+    <>
+      <div className="py-6">
+        <Link
+          to="/applications"
+          className={buttonVariants({ variant: "outline", size: "sm" })}
+        >
+          <ArrowLeft />
+          Back to applications
+        </Link>
+      </div>
 
       {isLoading && <p>Loading...</p>}
 
@@ -58,6 +61,6 @@ export function ApplicationDetailsPage() {
           </CardContent>
         </Card>
       )}
-    </div>
-  );
+    </>
+  )
 }
