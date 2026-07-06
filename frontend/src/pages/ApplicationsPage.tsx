@@ -1,5 +1,6 @@
 import { useNavigate } from "react-router-dom"
 import { useQuery } from "@tanstack/react-query"
+
 import { getJobApplications } from "@/api/jobApplication"
 import { Badge } from "@/components/ui/badge"
 import {
