@@ -43,6 +43,7 @@ Open http://localhost:5173
 | `cd frontend && pnpm dev`                       | Start Vite dev server                    |
 | `cd frontend && pnpm build`                     | Build React app for production           |
 | `cd frontend && pnpm lint`                      | Lint TypeScript                          |
+| `cd frontend && pnpm format`                    | Format frontend files with Prettier      |
 
 ## Project Structure
 

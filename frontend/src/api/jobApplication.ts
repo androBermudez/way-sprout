@@ -43,6 +43,8 @@ export interface JobApplicationsQuery {
   direction?: SortDirectionValue
 }
 
+const API_BASE_URL = "/api/v1"
+
 export async function getJobApplications(
   query: JobApplicationsQuery = {},
 ): Promise<JobApplication[]> {
@@ -70,7 +72,7 @@ export async function getJobApplications(
 
   const queryString = params.toString()
   const response = await fetch(
-    `/api/v1/applications${queryString ? `?${queryString}` : ""}`,
+    `${API_BASE_URL}/applications${queryString ? `?${queryString}` : ""}`,
   )
 
   if (!response.ok) {
@@ -80,19 +82,16 @@ export async function getJobApplications(
   return response.json()
 }
 
-export async function getJobApplicationById(
-  id: string,
-): Promise<JobApplication | null> {
-  const response = await fetch(`/api/v1/applications/${id}`)
+export async function getJobApplicationById(id: string): Promise<JobApplication | null> {
+  const response = await fetch(`${API_BASE_URL}/applications/${id}`)
+  const status = response.status
 
-  if (response.status === 404) {
+  if (status === 404) {
     return null
   }
 
   if (!response.ok) {
-    throw new Error(
-      `Failed to load application with id ${id}: ${response.status}`,
-    )
+    throw new Error(`Failed to load application with id ${id}: ${status}`)
   }
 
   return response.json()

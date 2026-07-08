@@ -1,7 +1,7 @@
-import { useMemo, useState } from "react"
-import { useNavigate } from "react-router-dom"
 import { useQuery } from "@tanstack/react-query"
 import { ArrowDown, ArrowUp, ChevronsUpDown } from "lucide-react"
+import { useMemo, useState } from "react"
+import { useNavigate } from "react-router-dom"
 
 import {
   APPLICATION_STATUSES,
@@ -12,7 +12,6 @@ import {
   type SortCriteriaValue,
   type SortDirectionValue,
 } from "@/api/jobApplication"
-import { useDebouncedValue } from "@/lib/useDebouncedValue"
 import { Badge } from "@/components/ui/badge"
 import { buttonVariants } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
@@ -33,6 +32,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
+import { useDebouncedValue } from "@/lib/useDebouncedValue"
 
 const DATE_RANGE_LABELS: Record<DateRangePresetValue, string> = {
   Today: "Today",
@@ -52,19 +52,9 @@ interface SortableHeaderProps {
   onSort: (column: SortCriteriaValue) => void
 }
 
-function SortableHeader({
-  label,
-  column,
-  sortBy,
-  direction,
-  onSort,
-}: SortableHeaderProps) {
+function SortableHeader({ label, column, sortBy, direction, onSort }: SortableHeaderProps) {
   const isActive = sortBy === column
-  const Icon = isActive
-    ? direction === "Asc"
-      ? ArrowUp
-      : ArrowDown
-    : ChevronsUpDown
+  const Icon = isActive ? (direction === "Asc" ? ArrowUp : ArrowDown) : ChevronsUpDown
 
   return (
     <TableHead>
@@ -86,18 +76,10 @@ export function ApplicationsPage() {
   const [searchText, setSearchText] = useState("")
   const debouncedSearchText = useDebouncedValue(searchText, 300)
 
-  const [selectedStatuses, setSelectedStatuses] = useState<
-    ApplicationStatusValue[]
-  >([])
-  const [appliedRange, setAppliedRange] = useState<
-    DateRangePresetValue | undefined
-  >(undefined)
-  const [sortBy, setSortBy] = useState<SortCriteriaValue | undefined>(
-    undefined,
-  )
-  const [direction, setDirection] = useState<SortDirectionValue | undefined>(
-    undefined,
-  )
+  const [selectedStatuses, setSelectedStatuses] = useState([] as ApplicationStatusValue[])
+  const [appliedRange, setAppliedRange] = useState(undefined as DateRangePresetValue | undefined)
+  const [sortBy, setSortBy] = useState(undefined as SortCriteriaValue | undefined)
+  const [direction, setDirection] = useState(undefined as SortDirectionValue | undefined)
 
   const query = useMemo(
     () => ({
@@ -115,13 +97,13 @@ export function ApplicationsPage() {
     queryFn: () => getJobApplications(query),
   })
 
-  function toggleStatus(status: ApplicationStatusValue, checked: boolean) {
+  const toggleStatus = (status: ApplicationStatusValue, checked: boolean) => {
     setSelectedStatuses((current) =>
       checked ? [...current, status] : current.filter((s) => s !== status),
     )
   }
 
-  function handleSort(column: SortCriteriaValue) {
+  const handleSort = (column: SortCriteriaValue) => {
     if (sortBy !== column) {
       setSortBy(column)
       setDirection("Asc")
@@ -144,9 +126,7 @@ export function ApplicationsPage() {
         />
 
         <Popover>
-          <PopoverTrigger
-            className={buttonVariants({ variant: "outline", size: "sm" })}
-          >
+          <PopoverTrigger className={buttonVariants({ variant: "outline", size: "sm" })}>
             Status
             {selectedStatuses.length > 0 && ` (${selectedStatuses.length})`}
           </PopoverTrigger>
@@ -166,9 +146,7 @@ export function ApplicationsPage() {
         <Select
           value={appliedRange ?? "All"}
           onValueChange={(value) =>
-            setAppliedRange(
-              value === "All" ? undefined : (value as DateRangePresetValue),
-            )
+            setAppliedRange(value === "All" ? undefined : (value as DateRangePresetValue))
           }
         >
           <SelectTrigger size="sm">

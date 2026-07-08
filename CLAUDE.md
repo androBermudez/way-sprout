@@ -143,39 +143,14 @@ public void IsFinal_FinalStatuses_ReturnsTrue(ApplicationStatus status) { ... }
 
   One recurring shape of this: when multiple branches of a condition differ only in _what_ value/function they use, extract that difference as a value once, then apply the shared operation once — instead of repeating the full operation inside every branch.
 
-  ```csharp
-  // Prefer: the branch only decides *what* to select; the operation (OrderBy/OrderByDescending) applies once.
-  Func<JobApplication, string> keySelector = sortBy switch
-  {
-    JobApplicationSortCriteria.Company => a => a.Company,
-    JobApplicationSortCriteria.Position => a => a.Position,
-    _ => a => a.Company,
-  };
-
-  return descending
-    ? applications.OrderByDescending(keySelector)
-    : applications.OrderBy(keySelector);
-
-  // Avoid: the full operation (OrderBy vs OrderByDescending) is duplicated inside every branch.
-  return sortBy switch
-  {
-    JobApplicationSortCriteria.Company => descending
-      ? applications.OrderByDescending(a => a.Company)
-      : applications.OrderBy(a => a.Company),
-    JobApplicationSortCriteria.Position => descending
-      ? applications.OrderByDescending(a => a.Position)
-      : applications.OrderBy(a => a.Position),
-    _ => applications,
-  };
-  ```
-
 - **LINQ is the default tool for data pipelines**, preferred over hand-rolled loops when it reads at least as clearly — but its deferred execution has real gotchas (multiple enumeration, exceptions surfacing late, `yield return` deferring even argument validation). `CA1851` is enabled in `.editorconfig` to catch the common case at build time. Full writeup with examples: [`docs/linq-guidelines.md`](docs/linq-guidelines.md) — read it before writing a non-trivial LINQ chain, not just when something breaks.
 - **Avoid XML doc comments (`///`) that just restate the signature** — not a blanket ban on comments. If a descriptive name (`Create`, `HandleAsync`, `GetByIdAsync`) plus its parameter/return types already tell the reader what it does, a `///` on top of that is redundant. Write one when there's a non-obvious constraint, invariant, or side effect that the signature can't express on its own.
 
 ### Frontend (TypeScript/TSX)
 
-- **Formatting:** Prettier on save (`editor.formatOnSave` + `esbenp.prettier-vscode`, configured in `.devcontainer/devcontainer.json`). Config lives in `frontend/.prettierrc`, scoped to `frontend/` only — it doesn't affect `.NET` or root-level files. `"semi": false`: semicolons are omitted where safe, kept only where required to avoid ambiguous parses.
+- **Formatting:** Prettier on save (`editor.formatOnSave` + `esbenp.prettier-vscode`, configured in `.devcontainer/devcontainer.json`). Config lives in `frontend/.prettierrc`, scoped to `frontend/` only — it doesn't affect `.NET` or root-level files. `"semi": false`: semicolons are omitted where safe, kept only where required to avoid ambiguous parses. `"printWidth": 100`. Run `pnpm format` to reformat the whole `frontend/` tree on demand, outside of format-on-save.
 - **Components:** function declarations (`export function ApplicationsPage() { ... }`), not arrow-function consts.
+- **Functions inside a component body** (event handlers, small helpers scoped to that component): arrow-function consts (`const handleSort = (column: SortCriteriaValue) => { ... }`), not `function` declarations. This is the inverse of the rule above — it only applies to functions nested inside a component, not to the component itself or to standalone top-level functions/components in the same file.
 - **Exports:** named exports everywhere, except `src/App.tsx` (default export, matching the Vite template's entry-point convention). Enforced via oxlint's `import/no-default-export` rule, with an override allowing it in `App.tsx` (`frontend/.oxlintrc.json`).
 - **Import order:** third-party packages first, then a blank line, then internal `@/` imports.
 
@@ -219,6 +194,7 @@ Before merging, verify:
 - [ ] `dotnet test` — all green.
 - [ ] `pnpm build` — if the feature touches `frontend/`, type-checks and builds clean.
 - [ ] `pnpm lint` — if the feature touches `frontend/`, oxlint clean.
+- [ ] `pnpm format` — if the feature touches `frontend/`, Prettier applied (no unformatted diffs left).
 - [ ] `dotnet list package --vulnerable --include-transitive` — no new vulnerable packages introduced.
 - [ ] Domain Conventions followed (`DomainException`, not `ArgumentException`; `private set` + `static Create()`; `record` vs `class`).
 - [ ] Dependency direction respected: `Web → Application → Domain`, `Infrastructure → Application` — no new reference violates it.
