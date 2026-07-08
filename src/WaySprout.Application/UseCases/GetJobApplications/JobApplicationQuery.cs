@@ -5,7 +5,7 @@ namespace WaySprout.Application.UseCases.GetJobApplications;
 
 public record JobApplicationQuery(
   string? SearchText,
-  IReadOnlySet<ApplicationStatus> Statuses,   // vacío = todos
+  IReadOnlySet<ApplicationStatus> Statuses,   // empty means all
   DateRangePreset? AppliedRange,
   JobApplicationSortCriteria? SortBy,
   SortDirection? Direction);

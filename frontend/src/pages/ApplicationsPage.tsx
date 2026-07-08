@@ -76,10 +76,10 @@ export function ApplicationsPage() {
   const [searchText, setSearchText] = useState("")
   const debouncedSearchText = useDebouncedValue(searchText, 300)
 
-  const [selectedStatuses, setSelectedStatuses] = useState([] as ApplicationStatusValue[])
-  const [appliedRange, setAppliedRange] = useState(undefined as DateRangePresetValue | undefined)
-  const [sortBy, setSortBy] = useState(undefined as SortCriteriaValue | undefined)
-  const [direction, setDirection] = useState(undefined as SortDirectionValue | undefined)
+  const [selectedStatuses, setSelectedStatuses] = useState<ApplicationStatusValue[]>([])
+  const [appliedRange, setAppliedRange] = useState<DateRangePresetValue | undefined>(undefined)
+  const [sortBy, setSortBy] = useState<SortCriteriaValue | undefined>(undefined)
+  const [direction, setDirection] = useState<SortDirectionValue | undefined>(undefined)
 
   const query = useMemo(
     () => ({

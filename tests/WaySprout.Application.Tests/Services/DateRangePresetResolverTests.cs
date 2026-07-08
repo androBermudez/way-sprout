@@ -63,6 +63,26 @@ public class DateRangePresetResolverTests
   }
 
   [Fact]
+  public void Resolve_ThisWeekOnMonday_ReturnsSameDayToSameDay()
+  {
+    var monday = new DateOnly(2026, 6, 22);
+    var (from, to) = Resolver(monday).Resolve(DateRangePreset.ThisWeek);
+
+    Assert.Equal(monday, from);
+    Assert.Equal(monday, to);
+  }
+
+  [Fact]
+  public void Resolve_ThisWeekOnSunday_ReturnsPrecedingMondayToSameDay()
+  {
+    var sunday = new DateOnly(2026, 6, 28);
+    var (from, to) = Resolver(sunday).Resolve(DateRangePreset.ThisWeek);
+
+    Assert.Equal(new DateOnly(2026, 6, 22), from); // Monday
+    Assert.Equal(sunday, to);
+  }
+
+  [Fact]
   public void Resolve_ThisMonth_ReturnsFirstOfMonthToToday()
   {
     var (from, to) = Resolver().Resolve(DateRangePreset.ThisMonth);
@@ -71,8 +91,10 @@ public class DateRangePresetResolverTests
     Assert.Equal(Today, to);
   }
 
-  private static DateRangePresetResolver Resolver() =>
-    new(new FixedTimeProvider(Today.ToDateTime(TimeOnly.MinValue)));
+  private static DateRangePresetResolver Resolver() => Resolver(Today);
+
+  private static DateRangePresetResolver Resolver(DateOnly today) =>
+    new(new FixedTimeProvider(today.ToDateTime(TimeOnly.MinValue)));
 
   private sealed class FixedTimeProvider(DateTime now) : TimeProvider
   {
