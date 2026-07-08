@@ -1,5 +1,5 @@
-import { Navigate } from "react-router-dom";
+import { Navigate } from "react-router-dom"
 
 export function HomePage() {
-  return <Navigate to="/applications" replace />;
+  return <Navigate to="/applications" replace />
 }

@@ -34,11 +34,12 @@ src/
 
 ## Commands
 
-| Command | Description |
-|---|---|
-| `pnpm dev` | Start Vite dev server |
+| Command      | Description                   |
+| ------------ | ----------------------------- |
+| `pnpm dev`   | Start Vite dev server         |
 | `pnpm build` | Type-check + production build |
-| `pnpm lint` | Lint with oxlint |
+| `pnpm lint`  | Lint with oxlint              |
+| `pnpm format` | Format with Prettier          |
 
 See the [root README](../README.md) and [CLAUDE.md](../CLAUDE.md) for the full project (backend, architecture, conventions).
 

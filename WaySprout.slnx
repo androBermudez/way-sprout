@@ -8,5 +8,6 @@
   <Folder Name="/tests/">
     <Project Path="tests/WaySprout.Application.Tests/WaySprout.Application.Tests.csproj" />
     <Project Path="tests/WaySprout.Domain.Tests/WaySprout.Domain.Tests.csproj" />
+    <Project Path="tests/WaySprout.Infrastructure.Tests/WaySprout.Infrastructure.Tests.csproj" />
   </Folder>
 </Solution>

@@ -1,5 +1,6 @@
 using WaySprout.Application.Ports;
 using WaySprout.Application.UseCases.GetJobApplicationById;
+using WaySprout.Application.UseCases.GetJobApplications;
 using WaySprout.Domain.Entities;
 
 namespace WaySprout.Application.Tests.UseCases.GetJobApplicationById;
@@ -44,7 +45,7 @@ public class GetJobApplicationByIdHandlerTests
 
   private sealed class FakeJobApplicationRepository(params JobApplication[] applications) : IJobApplicationRepository
   {
-    public Task<IReadOnlyList<JobApplication>> GetAllAsync() =>
+    public Task<IReadOnlyList<JobApplication>> GetAllAsync(JobApplicationFilter filter) =>
       Task.FromResult<IReadOnlyList<JobApplication>>(applications);
 
     public Task<JobApplication?> GetByIdAsync(Guid id) =>

@@ -1,9 +1,9 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom"
+import { BrowserRouter, Route, Routes } from "react-router-dom"
 
-import { ApplicationsPage } from "@/pages/ApplicationsPage"
 import { ApplicationDetailsPage } from "@/pages/ApplicationDetailsPage"
+import { ApplicationsLayout } from "@/pages/ApplicationsLayout"
+import { ApplicationsPage } from "@/pages/ApplicationsPage"
 import { HomePage } from "@/pages/HomePage"
-import { ApplicationsLayout } from "./pages/ApplicationsLayout"
 
 function App() {
   return (
