@@ -56,17 +56,32 @@ frontend/                  — React app (Vite)
 tests/
   WaySprout.Domain.Tests/
   WaySprout.Application.Tests/
+  WaySprout.Infrastructure.Tests/
 ```
 
 ## API
 
 Base URL: `http://localhost:5022/api/v1`
 
-| Method | Path                 | Description            |
-| ------ | -------------------- | ---------------------- |
-| GET    | `/applications`      | List all applications  |
-| GET    | `/applications/{id}` | Get one application    |
-| POST   | `/applications`      | Create new application |
+| Method | Path                 | Description                                                            |
+| ------ | -------------------- | ----------------------------------------------------------------------- |
+| GET    | `/applications`      | List applications — supports filtering and sorting via query params (see below) |
+| GET    | `/applications/{id}` | Get one application                                                    |
+| POST   | `/applications`      | Create new application                                                 |
+
+### `GET /applications` query params
+
+| Param          | Values                                                                                 | Description                                            |
+| -------------- | --------------------------------------------------------------------------------------- | ------------------------------------------------------- |
+| `q`            | any text                                                                                 | Matches against Company or Position (case-insensitive)  |
+| `status`       | `Applied`, `Interviewing`, `Offer`, `Rejected`, `Withdrawn` (repeat the param for multiple) | Filters by status; omit for all statuses               |
+| `appliedRange` | `Today`, `Last2Days`, `ThisWeek`, `Last7Days`, `ThisMonth`, `Last30Days`, `Last90Days`   | Filters by applied date, resolved server-side relative to "now" |
+| `sortBy`       | `Company`, `Position`, `DateApplied`                                                     | Sort criterion; omit for unsorted (seed order)          |
+| `direction`    | `Asc`, `Desc`                                                                            | Sort direction; defaults to `Asc` if `sortBy` is set     |
+
+All enum-like values are case-insensitive. An unrecognized value for any param returns `400 Bad Request` as an RFC 7807 `application/problem+json` body, e.g. `{"errors":{"status":["Invalid status value: 'Bogus'."]}}`.
+
+Example: `GET /api/v1/applications?q=engineer&status=Applied&status=Interviewing&appliedRange=Last30Days&sortBy=DateApplied&direction=Desc`
 
 ## OpenAPI / Swagger (not currently included)
 
