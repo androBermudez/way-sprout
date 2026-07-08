@@ -1,4 +1,5 @@
-﻿using WaySprout.Application.Ports;
+﻿using WaySprout.Application.Enums;
+using WaySprout.Application.Ports;
 using WaySprout.Application.UseCases.GetJobApplications;
 using WaySprout.Domain.Entities;
 
@@ -48,11 +49,64 @@ public class InMemoryJobApplicationRepository : IJobApplicationRepository
     ),
   ];
 
-  // TODO: apply filter.SearchText / Statuses / AppliedFrom-To / SortBy / Direction.
-  // Wiring the query end-to-end first; the actual filtering/sorting lands in a follow-up step.
   public Task<IReadOnlyList<JobApplication>> GetAllAsync(JobApplicationFilter filter)
   {
-    return Task.FromResult(Seed);
+    IEnumerable<JobApplication> applications = Seed;
+
+    if (!string.IsNullOrWhiteSpace(filter.SearchText))
+    {
+      applications = applications.Where(a =>
+        a.Company.Contains(filter.SearchText, StringComparison.OrdinalIgnoreCase) ||
+        a.Position.Contains(filter.SearchText, StringComparison.OrdinalIgnoreCase));
+    }
+
+    if (filter.Statuses.Count > 0)
+    {
+      applications = applications.Where(a => filter.Statuses.Contains(a.Status));
+    }
+
+    if (filter.AppliedFrom is { } from)
+    {
+      applications = applications.Where(a => a.AppliedOn >= from);
+    }
+
+    if (filter.AppliedTo is { } to)
+    {
+      applications = applications.Where(a => a.AppliedOn <= to);
+    }
+
+    applications = Sort(applications, filter.SortBy, filter.Direction);
+
+    return Task.FromResult<IReadOnlyList<JobApplication>>([.. applications]);
+  }
+
+  private static IEnumerable<JobApplication> Sort(
+    IEnumerable<JobApplication> applications,
+    JobApplicationSortCriteria? sortBy,
+    SortDirection? direction)
+  {
+    if (sortBy is null)
+    {
+      return applications;
+    }
+
+    var descending = direction == SortDirection.Desc;
+
+    Func<JobApplication, string>? keySelector = sortBy switch
+    {
+      JobApplicationSortCriteria.Company => a => a.Company,
+      JobApplicationSortCriteria.Position => a => a.Position,
+      JobApplicationSortCriteria.DateApplied => a => a.AppliedOn.ToString("yyyy-MM-dd"),
+      _ => null,
+    };
+
+    if (keySelector is null)
+    {
+      return applications;
+    }
+    return descending
+      ? applications.OrderByDescending(keySelector, StringComparer.OrdinalIgnoreCase)
+      : applications.OrderBy(keySelector, StringComparer.OrdinalIgnoreCase);
   }
 
   public Task<JobApplication?> GetByIdAsync(Guid id)

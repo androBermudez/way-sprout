@@ -1,6 +1,6 @@
 namespace WaySprout.Application.UseCases.GetJobApplicationById;
 
-public record GetJobApplicationByIdDto(
+public record JobApplicationDetailsDto(
   Guid Id,
   string Company,
   string Position,

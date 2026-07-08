@@ -6,7 +6,7 @@ public class GetJobApplicationByIdHandler(IJobApplicationRepository repository)
 {
   public IJobApplicationRepository Repository { get; } = repository;
 
-  public async Task<GetJobApplicationByIdDto?> HandleAsync(Guid id)
+  public async Task<JobApplicationDetailsDto?> HandleAsync(Guid id)
   {
     var jobApplication = await Repository.GetByIdAsync(id);
 
@@ -15,7 +15,7 @@ public class GetJobApplicationByIdHandler(IJobApplicationRepository repository)
       return null;
     }
 
-    return new GetJobApplicationByIdDto(
+    return new JobApplicationDetailsDto(
       jobApplication.Id,
       jobApplication.Company,
       jobApplication.Position,
