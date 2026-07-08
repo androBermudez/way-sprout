@@ -57,11 +57,11 @@ export async function getJobApplications(
   }
 
   if (query.appliedRange) {
-    params.set("appliedRange", query.appliedRange)
+    params.set("applied-range", query.appliedRange)
   }
 
   if (query.sortBy) {
-    params.set("sortBy", query.sortBy)
+    params.set("sort-by", query.sortBy)
   }
 
   if (query.direction) {

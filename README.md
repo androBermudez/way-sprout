@@ -71,17 +71,23 @@ Base URL: `http://localhost:5022/api/v1`
 
 ### `GET /applications` query params
 
-| Param          | Values                                                                                 | Description                                            |
-| -------------- | --------------------------------------------------------------------------------------- | ------------------------------------------------------- |
-| `q`            | any text                                                                                 | Matches against Company or Position (case-insensitive)  |
-| `status`       | `Applied`, `Interviewing`, `Offer`, `Rejected`, `Withdrawn` (repeat the param for multiple) | Filters by status; omit for all statuses               |
-| `appliedRange` | `Today`, `Last2Days`, `ThisWeek`, `Last7Days`, `ThisMonth`, `Last30Days`, `Last90Days`   | Filters by applied date, resolved server-side relative to "now" |
-| `sortBy`       | `Company`, `Position`, `DateApplied`                                                     | Sort criterion; omit for unsorted (seed order)          |
-| `direction`    | `Asc`, `Desc`                                                                            | Sort direction; defaults to `Asc` if `sortBy` is set     |
+| Param           | Values                                                                                 | Description                                            |
+| --------------- | --------------------------------------------------------------------------------------- | ------------------------------------------------------- |
+| `q`             | any text                                                                                 | Matches against Company or Position (case-insensitive)  |
+| `status`        | `Applied`, `Interviewing`, `Offer`, `Rejected`, `Withdrawn` (repeat the param for multiple) | Filters by status; omit for all statuses               |
+| `applied-range` | `Today`, `Last2Days`, `ThisWeek`, `Last7Days`, `ThisMonth`, `Last30Days`, `Last90Days`   | Filters by applied date, resolved server-side relative to "now" |
+| `sort-by`       | `Company`, `Position`, `DateApplied`                                                     | Sort criterion; omit for unsorted (seed order)          |
+| `direction`     | `Asc`, `Desc`                                                                            | Sort direction; defaults to `Asc` if `sort-by` is set    |
 
 All enum-like values are case-insensitive. An unrecognized value for any param returns `400 Bad Request` as an RFC 7807 `application/problem+json` body, e.g. `{"errors":{"status":["Invalid status value: 'Bogus'."]}}`.
 
-Example: `GET /api/v1/applications?q=engineer&status=Applied&status=Interviewing&appliedRange=Last30Days&sortBy=DateApplied&direction=Desc`
+Example: `GET /api/v1/applications?q=engineer&status=Applied&status=Interviewing&applied-range=Last30Days&sort-by=DateApplied&direction=Desc`
+
+### URL naming convention
+
+Path segments and query parameter **names** use `kebab-case` (e.g. `applied-range`, `sort-by`) — this is the convention most REST APIs converge on for multi-word URL parts, and it's independent from the casing used inside the JSON body. Query parameter **values** are unaffected by this rule: they're still whatever casing the underlying type expects (case-insensitive enum names here) and may be `camelCase`.
+
+Single-word params (`q`, `status`, `direction`) look unchanged simply because there's nothing to hyphenate — the rule still applies to them.
 
 ## OpenAPI / Swagger (not currently included)
 

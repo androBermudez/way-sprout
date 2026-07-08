@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Mvc;
 using WaySprout.Application.Enums;
 using WaySprout.Application.Ports;
 using WaySprout.Application.Services;
@@ -33,8 +34,8 @@ var apiGroup = app.MapGroup("/api/v1");
 apiGroup.MapGet("/applications", async (
     string? q,
     string[]? status,
-    string? appliedRange,
-    string? sortBy,
+    [FromQuery(Name = "applied-range")] string? appliedRange,
+    [FromQuery(Name = "sort-by")] string? sortBy,
     string? direction,
     GetJobApplicationsHandler handler) =>
 {
@@ -60,7 +61,7 @@ apiGroup.MapGet("/applications", async (
   {
     return Results.ValidationProblem(new Dictionary<string, string[]>
     {
-      ["appliedRange"] = [$"Invalid appliedRange value: '{appliedRange}'."],
+      ["applied-range"] = [$"Invalid applied-range value: '{appliedRange}'."],
     });
   }
 
@@ -68,7 +69,7 @@ apiGroup.MapGet("/applications", async (
   {
     return Results.ValidationProblem(new Dictionary<string, string[]>
     {
-      ["sortBy"] = [$"Invalid sortBy value: '{sortBy}'."],
+      ["sort-by"] = [$"Invalid sort-by value: '{sortBy}'."],
     });
   }
 

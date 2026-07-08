@@ -94,7 +94,9 @@ public static JobApplication Create(Guid userId, string company, ...) { ... }
 
 **`Program.cs` is the composition root** — the one file allowed to reference `WaySprout.Infrastructure` directly, to register concrete adapters against `Application` ports. Endpoints themselves only depend on `Application` types (handlers, queries, DTOs), never on `Infrastructure`.
 
-**Query-string parsing:** enum-valued query params (`status`, `appliedRange`, `sortBy`, `direction`) go through the local `TryParseEnum<TEnum>` helper already defined in `Program.cs` — absent/empty parses to `null` successfully, an unrecognized value fails. Reuse it for new enum-valued params instead of hand-rolling `Enum.TryParse` per param.
+**URL naming:** path segments and query parameter *names* use `kebab-case` (e.g. `applied-range`, `sort-by`) — the convention most REST APIs converge on for multi-word URL parts, kept independent from JSON body casing. This only affects the wire name; C# parameter/variable names stay idiomatic camelCase. When a param's kebab-case wire name differs from its C# identifier, bind it explicitly with `[FromQuery(Name = "...")]` (see `appliedRange`/`sortBy` in `Program.cs`). Query parameter *values* are unaffected by this rule — they keep whatever casing the type expects (enum values here are case-insensitive and may be `camelCase`).
+
+**Query-string parsing:** enum-valued query params (`status`, `applied-range` → `appliedRange`, `sort-by` → `sortBy`, `direction`) go through the local `TryParseEnum<TEnum>` helper already defined in `Program.cs` — absent/empty parses to `null` successfully, an unrecognized value fails. Reuse it for new enum-valued params instead of hand-rolling `Enum.TryParse` per param.
 
 **Error responses:** validation failures (a bad query param) return `Results.ValidationProblem(...)` — RFC 7807 `application/problem+json`, enabled via `builder.Services.AddProblemDetails()` in `Program.cs`. "Not found" returns a plain `Results.NotFound()` (empty body — there's nothing more to say than the status code). Don't return a bare string from `Results.BadRequest(string)`; it isn't structured and a client can't parse it programmatically.
 
