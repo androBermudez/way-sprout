@@ -114,4 +114,10 @@ public class InMemoryJobApplicationRepository : IJobApplicationRepository
     var jobApplication = Seed.FirstOrDefault(ja => ja.Id == id);
     return Task.FromResult(jobApplication);
   }
+
+  public Task AddAsync(JobApplication application) =>
+    throw new NotImplementedException("Not implemented yet.");
+
+  public Task<bool> UpdateAsync(JobApplication application) =>
+    throw new NotImplementedException("Not implemented yet.");
 }

@@ -91,6 +91,23 @@ public class GetJobApplicationsHandlerTests
 
     public Task<JobApplication?> GetByIdAsync(Guid id) =>
       Task.FromResult(applications.FirstOrDefault(a => a.Id == id));
+
+    public Task AddAsync(JobApplication application)
+    {
+      applications = [.. applications, application];
+      return Task.CompletedTask;
+    }
+
+    public Task<bool> UpdateAsync(JobApplication application)
+    {
+      var index = Array.FindIndex(applications, a => a.Id == application.Id);
+      if (index < 0)
+      {
+        return Task.FromResult(false);
+      }
+      applications[index] = application;
+      return Task.FromResult(true);
+    }
   }
 
   private sealed class FixedTimeProvider(DateTime now) : TimeProvider

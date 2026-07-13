@@ -41,7 +41,8 @@ public class GetJobApplicationByIdHandlerTests
       "Acme Corp",
       "Software Engineer",
       "Full stack role.",
-      new DateOnly(2026, 1, 15));
+      new DateOnly(2026, 1, 15),
+      null);
 
   private sealed class FakeJobApplicationRepository(params JobApplication[] applications) : IJobApplicationRepository
   {
@@ -50,5 +51,23 @@ public class GetJobApplicationByIdHandlerTests
 
     public Task<JobApplication?> GetByIdAsync(Guid id) =>
       Task.FromResult(applications.FirstOrDefault(a => a.Id == id));
+
+    public Task AddAsync(JobApplication application)
+    {
+      applications = [.. applications, application];
+      return Task.CompletedTask;
+    }
+
+    public Task<bool> UpdateAsync(JobApplication application)
+    {
+      var index = Array.FindIndex(applications, a => a.Id == application.Id);
+      if (index < 0)
+      {
+        return Task.FromResult(false);
+      }
+      applications[index] = application;
+      return Task.FromResult(true);
+    }
+
   }
 }
