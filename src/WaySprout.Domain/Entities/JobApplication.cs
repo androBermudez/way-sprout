@@ -68,4 +68,22 @@ public class JobApplication
       Url = url,
     };
   }
+
+
+  public void UpdateDescription(string description)
+  {
+    Description = description;
+  }
+
+  public void Update(
+    ApplicationStatus status,
+    DateTime utcNow,
+    string? url = null
+    )
+  {
+    Status = status;
+    UpdatedAtUtc = utcNow;
+    Url = url;
+  }
+
 }
