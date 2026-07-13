@@ -13,7 +13,7 @@ public class JobApplicationTests
     var userId = Guid.NewGuid();
     var appliedOn = new DateOnly(2026, 1, 15);
 
-    var application = JobApplication.Create(id, userId, "Acme Corp", "Software Engineer", "Full stack role.", appliedOn);
+    var application = JobApplication.Create(id, userId, "Acme Corp", "Software Engineer", "Full stack role.", appliedOn, "https://acme.com/jobs/123");
 
     Assert.Equal(id, application.Id);
     Assert.Equal(userId, application.UserId);
@@ -21,6 +21,7 @@ public class JobApplicationTests
     Assert.Equal("Software Engineer", application.Position);
     Assert.Equal("Full stack role.", application.Description);
     Assert.Equal(appliedOn, application.AppliedOn);
+    Assert.Equal("https://acme.com/jobs/123", application.Url);
   }
 
   [Fact]
@@ -33,6 +34,12 @@ public class JobApplicationTests
   public void Create_ValidInput_NotesIsEmpty()
   {
     Assert.Empty(Valid().Notes);
+  }
+
+  [Fact]
+  public void Create_ValidInput_UrlIsNull()
+  {
+    Assert.Null(Valid().Url);
   }
 
   [Fact]
