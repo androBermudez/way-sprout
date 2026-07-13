@@ -1,5 +1,6 @@
 using WaySprout.Application.Enums;
 using WaySprout.Application.UseCases.GetJobApplications;
+using WaySprout.Domain.Entities;
 using WaySprout.Domain.Enums;
 using WaySprout.Infrastructure.Repositories;
 
@@ -112,6 +113,47 @@ public class InMemoryJobApplicationRepositoryTests
       EmptyFilter() with { SortBy = JobApplicationSortCriteria.DateApplied, Direction = SortDirection.Desc });
 
     Assert.Equal(["Vertice Labs", "Cronos Digital", "Nébula Soft"], result.Select(a => a.Company));
+  }
+
+  [Fact]
+  public async Task AddAsync_NewApplication_AppearsInGetAll()
+  {
+    var repo = Repository();
+    var newApp = JobApplication.Create(
+      Guid.NewGuid(), Guid.NewGuid(), "New Corp", "Tester", "Desc.", new DateOnly(2026, 7, 13));
+
+    await repo.AddAsync(newApp);
+    var result = await repo.GetAllAsync(EmptyFilter());
+
+    Assert.Equal(4, result.Count);
+    Assert.Contains(result, a => a.Id == newApp.Id);
+  }
+
+  [Fact]
+  public async Task UpdateAsync_ExistingApplication_ReflectsChange()
+  {
+    var repo = Repository();
+    var existing = (await repo.GetAllAsync(EmptyFilter())).First();
+
+    existing.Update(ApplicationStatus.Interviewing, DateTime.UtcNow);
+    var found = await repo.UpdateAsync(existing);
+    var updated = await repo.GetByIdAsync(existing.Id);
+
+    Assert.True(found);
+    Assert.NotNull(updated);
+    Assert.Equal(ApplicationStatus.Interviewing, updated.Status);
+  }
+
+  [Fact]
+  public async Task UpdateAsync_UnknownId_ReturnsFalse()
+  {
+    var repo = Repository();
+    var unknown = JobApplication.Create(
+      Guid.NewGuid(), Guid.NewGuid(), "Ghost Corp", "Dev", "Desc.", new DateOnly(2026, 7, 13));
+
+    var found = await repo.UpdateAsync(unknown);
+
+    Assert.False(found);
   }
 
   private static InMemoryJobApplicationRepository Repository() => new();
