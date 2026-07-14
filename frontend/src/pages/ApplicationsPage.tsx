@@ -13,7 +13,7 @@ import {
   type SortDirectionValue,
 } from "@/api/jobApplication"
 import { Badge } from "@/components/ui/badge"
-import { buttonVariants } from "@/components/ui/button"
+import { Button, buttonVariants } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Input } from "@/components/ui/input"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
@@ -161,6 +161,10 @@ export function ApplicationsPage() {
             ))}
           </SelectContent>
         </Select>
+
+        <Button size="sm" onClick={() => navigate("/applications/new")}>
+          New application
+        </Button>
       </div>
 
       {isLoading && <p>Loading...</p>}
