@@ -11,7 +11,7 @@ public class CreateJobApplicationHandlerTests
   public async Task HandleAsync_ValidCommand_AddsApplicationAndReturnsNewGuid()
   {
     var fake = new FakeJobApplicationRepository();
-    var handler = new CreateJobApplicationHandler(fake, TimeProvider.System);
+    var handler = new CreateJobApplicationHandler(fake);
     var command = new CreateJobApplicationCommand(
       "Acme Corp", "Software Engineer", "Full stack role.", new DateOnly(2026, 7, 1), null);
 
@@ -31,7 +31,7 @@ public class CreateJobApplicationHandlerTests
   public async Task HandleAsync_CommandWithUrl_StoresUrl()
   {
     var fake = new FakeJobApplicationRepository();
-    var handler = new CreateJobApplicationHandler(fake, TimeProvider.System);
+    var handler = new CreateJobApplicationHandler(fake);
     var command = new CreateJobApplicationCommand(
       "Acme Corp", "Software Engineer", "Desc", new DateOnly(2026, 7, 1), "https://linkedin.com/job/123");
 
@@ -43,7 +43,7 @@ public class CreateJobApplicationHandlerTests
   [Fact]
   public async Task HandleAsync_EachCall_ReturnsUniqueId()
   {
-    var handler = new CreateJobApplicationHandler(new FakeJobApplicationRepository(), TimeProvider.System);
+    var handler = new CreateJobApplicationHandler(new FakeJobApplicationRepository());
     var command = new CreateJobApplicationCommand("A", "B", "C", new DateOnly(2026, 7, 1), null);
 
     var id1 = await handler.HandleAsync(command);

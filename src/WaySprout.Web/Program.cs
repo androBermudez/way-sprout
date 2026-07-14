@@ -1,10 +1,14 @@
+using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Mvc;
 using WaySprout.Application.Enums;
 using WaySprout.Application.Ports;
 using WaySprout.Application.Services;
-using WaySprout.Application.UseCases.GetJobApplications;
+using WaySprout.Application.UseCases.CreateJobApplication;
 using WaySprout.Application.UseCases.GetJobApplicationById;
+using WaySprout.Application.UseCases.GetJobApplications;
+using WaySprout.Application.UseCases.UpdateJobApplication;
 using WaySprout.Domain.Enums;
+using WaySprout.Domain.Exceptions;
 using WaySprout.Infrastructure.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -19,11 +23,16 @@ builder.Services.AddCors(options =>
 
 builder.Services.AddProblemDetails();
 
+builder.Services.ConfigureHttpJsonOptions(options =>
+  options.SerializerOptions.Converters.Add(new JsonStringEnumConverter()));
+
 builder.Services.AddSingleton(TimeProvider.System);
 builder.Services.AddSingleton<DateRangePresetResolver>();
 builder.Services.AddScoped<IJobApplicationRepository, InMemoryJobApplicationRepository>();
 builder.Services.AddScoped<GetJobApplicationsHandler>();
 builder.Services.AddScoped<GetJobApplicationByIdHandler>();
+builder.Services.AddScoped<CreateJobApplicationHandler>();
+builder.Services.AddScoped<UpdateJobApplicationHandler>();
 
 var app = builder.Build();
 
@@ -90,6 +99,43 @@ apiGroup.MapGet("/applications/{id:guid}", async (Guid id, GetJobApplicationById
 {
   var result = await handler.HandleAsync(id);
   return result is not null ? Results.Ok(result) : Results.NotFound();
+});
+
+apiGroup.MapPost("/applications", async (
+    CreateJobApplicationCommand command,
+    CreateJobApplicationHandler handler) =>
+{
+  try
+  {
+    var id = await handler.HandleAsync(command);
+    return Results.Created($"/api/v1/applications/{id}", new { id });
+  }
+  catch (DomainException ex)
+  {
+    return Results.ValidationProblem(new Dictionary<string, string[]>
+    {
+      ["general"] = [ex.Message],
+    });
+  }
+});
+
+apiGroup.MapPut("/applications/{id:guid}", async (
+    Guid id,
+    UpdateJobApplicationCommand command,
+    UpdateJobApplicationHandler handler) =>
+{
+  try
+  {
+    var found = await handler.HandleAsync(command with { Id = id });
+    return found ? Results.NoContent() : Results.NotFound();
+  }
+  catch (DomainException ex)
+  {
+    return Results.ValidationProblem(new Dictionary<string, string[]>
+    {
+      ["general"] = [ex.Message],
+    });
+  }
 });
 
 app.Run();

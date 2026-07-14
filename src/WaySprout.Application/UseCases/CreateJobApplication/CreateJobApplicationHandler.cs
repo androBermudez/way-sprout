@@ -3,7 +3,7 @@ using WaySprout.Domain.Entities;
 
 namespace WaySprout.Application.UseCases.CreateJobApplication;
 
-public class CreateJobApplicationHandler(IJobApplicationRepository repository, TimeProvider timeProvider)
+public class CreateJobApplicationHandler(IJobApplicationRepository repository)
 {
   private static readonly Guid SeedUserId = Guid.Parse("11111111-1111-1111-1111-111111111111");
 
