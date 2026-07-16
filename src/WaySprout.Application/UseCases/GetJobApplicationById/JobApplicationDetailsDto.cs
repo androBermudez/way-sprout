@@ -6,5 +6,6 @@ public record JobApplicationDetailsDto(
   string Position,
   string Status,
   DateOnly AppliedOn,
-  string Description
+  string Description,
+  string? Url
 );

@@ -28,7 +28,7 @@ builder.Services.ConfigureHttpJsonOptions(options =>
 
 builder.Services.AddSingleton(TimeProvider.System);
 builder.Services.AddSingleton<DateRangePresetResolver>();
-builder.Services.AddScoped<IJobApplicationRepository, InMemoryJobApplicationRepository>();
+builder.Services.AddSingleton<IJobApplicationRepository, InMemoryJobApplicationRepository>();
 builder.Services.AddScoped<GetJobApplicationsHandler>();
 builder.Services.AddScoped<GetJobApplicationByIdHandler>();
 builder.Services.AddScoped<CreateJobApplicationHandler>();

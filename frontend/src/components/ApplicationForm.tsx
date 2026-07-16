@@ -82,6 +82,7 @@ export function ApplicationForm({
           value={values.company}
           onChange={(e) => set("company")(e.target.value)}
           placeholder="Company name"
+          disabled={showStatusField}
         />
         {errors.company && <p className="text-sm text-destructive">{errors.company}</p>}
       </div>
@@ -92,6 +93,7 @@ export function ApplicationForm({
           value={values.position}
           onChange={(e) => set("position")(e.target.value)}
           placeholder="Job title"
+          disabled={showStatusField}
         />
         {errors.position && <p className="text-sm text-destructive">{errors.position}</p>}
       </div>
@@ -112,6 +114,7 @@ export function ApplicationForm({
           type="date"
           value={values.appliedOn}
           onChange={(e) => set("appliedOn")(e.target.value)}
+          disabled={showStatusField}
         />
       </div>
 

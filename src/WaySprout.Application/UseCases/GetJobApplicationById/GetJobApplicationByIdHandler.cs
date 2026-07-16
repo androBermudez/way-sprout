@@ -21,7 +21,8 @@ public class GetJobApplicationByIdHandler(IJobApplicationRepository repository)
       jobApplication.Position,
       jobApplication.Status.ToString(),
       jobApplication.AppliedOn,
-      jobApplication.Description
+      jobApplication.Description,
+      jobApplication.Url
     );
   }
 }
