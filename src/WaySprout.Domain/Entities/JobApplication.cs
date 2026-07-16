@@ -14,6 +14,7 @@ public class JobApplication
   public string Position { get; private set; } = default!;
 
   public string Description { get; private set; } = default!;
+  public string? Url { get; private set; }
   public ApplicationStatus Status { get; private set; }
   public IList<string> Notes { get; private set; }
   public DateOnly AppliedOn { get; private set; }
@@ -31,7 +32,8 @@ public class JobApplication
     string company,
     string position,
     string description,
-    DateOnly appliedOn)
+    DateOnly appliedOn,
+    string? url = null)
   {
     if (id == Guid.Empty)
     {
@@ -63,6 +65,25 @@ public class JobApplication
       Status = ApplicationStatus.Applied,
       CreatedAtUtc = now,
       UpdatedAtUtc = now,
+      Url = url,
     };
   }
+
+
+  public void UpdateDescription(string description)
+  {
+    Description = description;
+  }
+
+  public void Update(
+    ApplicationStatus status,
+    DateTime utcNow,
+    string? url = null
+    )
+  {
+    Status = status;
+    UpdatedAtUtc = utcNow;
+    Url = url;
+  }
+
 }

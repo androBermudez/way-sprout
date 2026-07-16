@@ -9,7 +9,7 @@ public class InMemoryJobApplicationRepository : IJobApplicationRepository
 {
   private static readonly Guid SeedUserId = Guid.Parse("11111111-1111-1111-1111-111111111111");
 
-  private static readonly IReadOnlyList<JobApplication> Seed =
+  private readonly List<JobApplication> _applications =
   [
     JobApplication.Create(
       Guid.Parse("aaaaaaaa-0000-0000-0000-000000000001"),
@@ -51,7 +51,7 @@ public class InMemoryJobApplicationRepository : IJobApplicationRepository
 
   public Task<IReadOnlyList<JobApplication>> GetAllAsync(JobApplicationFilter filter)
   {
-    IEnumerable<JobApplication> applications = Seed;
+    IEnumerable<JobApplication> applications = _applications;
 
     if (!string.IsNullOrWhiteSpace(filter.SearchText))
     {
@@ -111,7 +111,25 @@ public class InMemoryJobApplicationRepository : IJobApplicationRepository
 
   public Task<JobApplication?> GetByIdAsync(Guid id)
   {
-    var jobApplication = Seed.FirstOrDefault(ja => ja.Id == id);
+    var jobApplication = _applications.FirstOrDefault(ja => ja.Id == id);
     return Task.FromResult(jobApplication);
+  }
+
+  public Task AddAsync(JobApplication application)
+  {
+    _applications.Add(application);
+    return Task.CompletedTask;
+  }
+
+  public Task<bool> UpdateAsync(JobApplication application)
+  {
+    var index = _applications.FindIndex(a => a.Id == application.Id);
+    if (index < 0)
+    {
+      return Task.FromResult(false);
+    }
+
+    _applications[index] = application;
+    return Task.FromResult(true);
   }
 }

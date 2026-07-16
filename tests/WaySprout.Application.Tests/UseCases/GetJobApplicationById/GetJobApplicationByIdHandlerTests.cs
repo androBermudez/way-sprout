@@ -10,7 +10,14 @@ public class GetJobApplicationByIdHandlerTests
   [Fact]
   public async Task HandleAsync_ExistingId_ReturnsMappedDto()
   {
-    var application = Valid();
+    var application = JobApplication.Create(
+      Guid.NewGuid(),
+      Guid.NewGuid(),
+      "Acme Corp",
+      "Software Engineer",
+      "Full stack role.",
+      new DateOnly(2026, 1, 15),
+      "https://acme.example/jobs/123");
     var handler = new GetJobApplicationByIdHandler(new FakeJobApplicationRepository(application));
 
     var dto = await handler.HandleAsync(application.Id);
@@ -22,6 +29,7 @@ public class GetJobApplicationByIdHandlerTests
     Assert.Equal(application.Status.ToString(), dto.Status);
     Assert.Equal(application.AppliedOn, dto.AppliedOn);
     Assert.Equal(application.Description, dto.Description);
+    Assert.Equal(application.Url, dto.Url);
   }
 
   [Fact]
@@ -41,7 +49,8 @@ public class GetJobApplicationByIdHandlerTests
       "Acme Corp",
       "Software Engineer",
       "Full stack role.",
-      new DateOnly(2026, 1, 15));
+      new DateOnly(2026, 1, 15),
+      null);
 
   private sealed class FakeJobApplicationRepository(params JobApplication[] applications) : IJobApplicationRepository
   {
@@ -50,5 +59,23 @@ public class GetJobApplicationByIdHandlerTests
 
     public Task<JobApplication?> GetByIdAsync(Guid id) =>
       Task.FromResult(applications.FirstOrDefault(a => a.Id == id));
+
+    public Task AddAsync(JobApplication application)
+    {
+      applications = [.. applications, application];
+      return Task.CompletedTask;
+    }
+
+    public Task<bool> UpdateAsync(JobApplication application)
+    {
+      var index = Array.FindIndex(applications, a => a.Id == application.Id);
+      if (index < 0)
+      {
+        return Task.FromResult(false);
+      }
+      applications[index] = application;
+      return Task.FromResult(true);
+    }
+
   }
 }

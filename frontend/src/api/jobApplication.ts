@@ -33,6 +33,7 @@ export interface JobApplication {
   status: string
   appliedOn: string
   description?: string
+  url?: string
 }
 
 export interface JobApplicationsQuery {
@@ -41,6 +42,20 @@ export interface JobApplicationsQuery {
   appliedRange?: DateRangePresetValue
   sortBy?: SortCriteriaValue
   direction?: SortDirectionValue
+}
+
+export interface CreateJobApplicationPayload {
+  company: string
+  position: string
+  description: string
+  appliedOn: string
+  url?: string
+}
+
+export interface UpdateJobApplicationPayload {
+  status: ApplicationStatusValue
+  description: string
+  url?: string
 }
 
 const API_BASE_URL = "/api/v1"
@@ -80,6 +95,36 @@ export async function getJobApplications(
   }
 
   return response.json()
+}
+
+export async function createJobApplication(data: CreateJobApplicationPayload): Promise<string> {
+  const response = await fetch(`${API_BASE_URL}/applications`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(data),
+  })
+
+  if (!response.ok) {
+    throw new Error(`Failed to create application: ${response.status}`)
+  }
+
+  const json = await response.json()
+  return json.id as string
+}
+
+export async function updateJobApplication(
+  id: string,
+  data: UpdateJobApplicationPayload,
+): Promise<void> {
+  const response = await fetch(`${API_BASE_URL}/applications/${id}`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(data),
+  })
+
+  if (!response.ok) {
+    throw new Error(`Failed to update application: ${response.status}`)
+  }
 }
 
 export async function getJobApplicationById(id: string): Promise<JobApplication | null> {
